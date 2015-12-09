@@ -1,9 +1,8 @@
-#%RAML 1.0
+#%RAML 0.8
 title: Coinnect Standard API
 version: v1
 baseUri: /coinnect/v1/
 mediaType: application/json
-description: Coinnect standard API
 /spot-price:
   description: Get current price
   get:
@@ -18,5 +17,4 @@ description: Coinnect standard API
               }
 /send-money:
   post:
-    protocols: HTTPS
     description: Send money to user

@@ -6,4 +6,4 @@ http://labs.omniti.com/labs/jsend
 
 http://apiworkbench.com/
 
-http://docs.raml.org/specs/1.0/
+https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md
