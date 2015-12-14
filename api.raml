@@ -70,13 +70,12 @@ schemas:
                 "required": "true",
                 "description": "Amount of fiat. Integer value. Smallest denomination"
                 },
-              "expireIn":{
+              "expire_in":{
                 "type": "integer",
-                "required": "true",
+                "required": "false",
                 "description": "Expiration in seconds"
                 }
               }
-
           },
           "order": {
 
@@ -106,7 +105,7 @@ schemas:
               }
 
 /quote:
-  description: Get a quote for current
+  description: Get a quote
   get:
     queryParameters:
       crypto_from:
@@ -136,10 +135,30 @@ schemas:
             example: |
               {
                 "status" : "success",
-                "data": { "price": 212}
+                "data": {
+                  "crypto_from": "BTC",
+                  "fiat_to": "USD",
+                  "amount_crypto": 100000000,
+                  "amount_fiat": 42234,
+                  "expire_in": 300
+                  }
               }
+      400:
+        body:
+          application/json:
+            schema: jsend
+            example: |
+              {
+                "status" : "fail",
+                "data": {
+                  "crypto_from": "Unsupported currency code 'LTC'"
+                  }
+              }
+
 /order:
   post:
     description: Place a send money order
   delete:
     description: Cancel a send money order
+  get:
+    description: Query order info and status
