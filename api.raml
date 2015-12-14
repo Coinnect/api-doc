@@ -3,18 +3,143 @@ title: Coinnect Standard API
 version: v1
 baseUri: /coinnect/v1/
 mediaType: application/json
-/spot-price:
-  description: Get current price
+schemas:
+  - jsend: |
+      {
+        "type": "object",
+        "$schema": "http://json-schema.org/draft-03/schema",
+        "id": "http://coinnect.io/schema#",
+        "description": "Following jsend @ http://labs.omniti.com/labs/jsend",
+        "properties": {
+          "status": {
+            "type": "string",
+            "required": true,
+            "description": "Response status",
+            "enum": [ "success", "fail", "error" ]
+          },
+          "data": {
+            "type": "object",
+            "description": "Data returned in case of success",
+            "oneOf": [
+                { "$ref": "#/definitions/currencies" },
+                { "$ref": "#/definitions/quote" },
+                { "$ref": "#/definitions/order" }
+            ]
+          },
+          "message":{
+            "type": "string",
+            "description": "Error message in case of error"
+          }
+        },
+        "definitions":{
+          "currencies": {
+            "type": "object",
+            "properties": {
+                "crypto": {
+                  "type": "array",
+                  "required": true,
+                  "description": "Supported crypto currencies"
+                },
+                "fiat": {
+                  "type": "array",
+                  "required": true,
+                  "description": "Supported fiat currencies"
+                }
+            }
+          },
+          "quote": {
+            "type": "object",
+            "properties": {
+              "crypto_from": {
+                "type": "string",
+                "required": "true",
+                "description": "Crypto currency quoted"
+                },
+              "fiat_to": {
+                "type": "string",
+                "required": "true",
+                "description": "Fiat currency quoted"
+                },
+              "amount_crypto": {
+                "type": "integer",
+                "required": "true",
+                "description": "Amount of crypto quoted"
+                },
+              "amount_fiat": {
+                "type": "integer",
+                "required": "true",
+                "description": "Amount of fiat. Integer value. Smallest denomination"
+                },
+              "expireIn":{
+                "type": "integer",
+                "required": "true",
+                "description": "Expiration in seconds"
+                }
+              }
+
+          },
+          "order": {
+
+          }
+        }
+      }
+/currency:
+  displayName: Get supported currencies
+  description: List supported curriencies handled by the server
   get:
     responses:
       200:
         body:
           application/json:
+            schema: jsend
+            example: |
+              {
+                "status" : "success",
+                "data": {
+                  "crypto": [
+                    "BTC", "ETH"
+                  ],
+                  "fiat": [
+                    "ARS", "MXN", "CLP", "USD", "BRL"
+                  ]
+                }
+              }
+
+/quote:
+  description: Get a quote for current
+  get:
+    queryParameters:
+      crypto_from:
+        displayName: Crypto currency to get quote from
+        description: Currency code should be one of the codes provided in /currency (crypto_currency array)
+        type: string
+        default: BTC
+        required: true
+      fiat_to:
+        displayName: Fiat currency to get quote to
+        description: Currency code should be one of the codes provided in /currency (fiat_currency array)
+        type: string
+        required: true
+        example: USD
+      amount_crypto:
+        displayName: Amount of crypto_currency quoted
+        description: Amount to be quoted. |
+            Must be in the smallest denomination of the crypto_currency, if BTC then amount is in satoshi, if ETH in wei.
+            Default value is 1 standard denomination; 1 BTC (100000000 satoshis), 1 ETH (1000000000000000000).
+        type: integer
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            schema: jsend
             example: |
               {
                 "status" : "success",
                 "data": { "price": 212}
               }
-/send-money:
+/order:
   post:
-    description: Send money to user
+    description: Place a send money order
+  delete:
+    description: Cancel a send money order
